@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const axios = require('axios');
 require('dotenv').config();
+const { generateAIresponse } = require('./config/commonFunction');
 
 const app = express();
 app.use(express.json());
@@ -238,6 +239,29 @@ app.get('/get-foodpanda-reviews', async (req, res) => {
       .catch((e) => console.log('A problem occurs: ' + e.response.data));
   } catch (error) {
     console.log(error);
+  }
+});
+app.get('/generate-response', async (req, res) => {
+  // Sample data - you can replace this with actual data
+  const systemPrompt =
+    'You will be given with reviews of restraunt on foodpanda for different restraunt you need to analyze sentiments of that and only give response in positive , negative and neutral';
+  const userPrompt = `Staff/Crew McD Btu, macam mana nak mkn bubur if tak provide cutleries w/pun dah request tapi tak bagi? Celup guna jari ke? Nasi lemak boleh la mkn dgn tgn…bubur?`;
+  const tokenLength = 10; // Example token length
+
+  try {
+    // Call the generateResponse function from gptService
+    const response = await generateAIresponse(
+      systemPrompt,
+      userPrompt,
+      tokenLength
+    );
+
+    // Send the response back to the client
+    res.send(response);
+  } catch (error) {
+    // Handle errors
+    console.error('Error generating response:', error);
+    res.status(500).send('Error generating response');
   }
 });
 
